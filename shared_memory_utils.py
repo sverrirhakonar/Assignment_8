@@ -43,6 +43,17 @@ class SharedPriceBook:
         item_size = np.dtype(self.dtype).itemsize
         self.total_size_bytes = self.num_symbols * item_size
 
+        # memory footprint
+        approx_entry_bytes = 10 + 8  # 10 bytes for symbol, 8 for price
+        approx_total_bytes = approx_entry_bytes * self.num_symbols
+
+        print(
+            f"[SharedPriceBook-Perf] symbols={self.num_symbols} "
+            f"approx_footprint={approx_total_bytes} bytes "
+            f"(dtype_size={self.total_size_bytes} bytes)"
+        )
+
+
         self.name = name
         self.shm = None
         self.price_array = None # This will be our NumPy "view"

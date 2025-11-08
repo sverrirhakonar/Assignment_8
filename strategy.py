@@ -216,6 +216,15 @@ def run_strategy():
             try:
                 order_bytes = json.dumps(order).encode("utf-8")
                 send_message(order_socket, order_bytes)
+
+                t2 = time.time()
+
+                print(
+                    f"[Strategy-Perf] t2={t2:.6f} "
+                    f"symbol={trade_symbol} price={price:.2f} "
+                    f"sentiment={sentiment} side={side}"
+                )
+
                 print(f"[Strategy] Sent order: {order}")
                 position = desired_position
             except OSError as e:

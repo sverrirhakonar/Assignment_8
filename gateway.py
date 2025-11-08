@@ -38,6 +38,9 @@ news_clients_lock = threading.Lock()
 current_prices = {symbol: random.uniform(100, 300) for symbol in SYMBOLS}
 # ------------------------------------
 
+tick_counter = 0
+gateway_start_time = time.time()
+
 def generate_price_data():
     """Generates a new random-walk price for each symbol."""
     global current_prices
@@ -55,39 +58,43 @@ def generate_price_data():
 
 def broadcast_prices():
     """
-    A thread target function.
     Periodically generates and broadcasts price data to all
     connected price clients.
     """
+    global tick_counter, gateway_start_time
+
     while True:
         try:
-            time.sleep(1) # Broadcast prices every 1 second
+            time.sleep(1)  # You will change this to 0.1, 0.01 etc for throughput tests
             
             message_data = generate_price_data()
             if not message_data:
                 continue
 
-            # We need to send data to a copy of the list,
-            # in case a client disconnects and we have to remove them.
             with price_clients_lock:
-                # Create a copy of the client list for safe iteration
                 current_clients = list(price_clients)
-            
+
             if not current_clients:
-                # Use end='\r' to rewrite the same line, looks cleaner
                 print(f"[Gateway-Price] No price clients connected. Skipping broadcast.", end='\r')
                 continue
-                
-            print(f"\n[Gateway-Price] Broadcasting prices to {len(current_clients)} client(s): {message_data}")
-            
+
+            # Performance: timestamp before sending (t1) and tick count
+            tick_counter += 1
+            t1 = time.time()
+            elapsed = t1 - gateway_start_time
+            throughput = tick_counter / elapsed if elapsed > 0 else 0.0
+
+            print(
+                f"\n[Gateway-Perf] tick={tick_counter} t1={t1:.6f} "
+                f"throughput_est={throughput:.2f} ticks/sec "
+                f"msg={message_data}"
+            )
+
             for client_socket in current_clients:
                 try:
-                    # Use our reliable send_message function
                     send_message(client_socket, message_data.encode('utf-8'))
                 except (BrokenPipeError, ConnectionResetError):
-                    # The client disconnected
                     print(f"\n[Gateway-Price] Client disconnected. Removing.")
-                    # Safely remove them from the *original* list
                     with price_clients_lock:
                         if client_socket in price_clients:
                             price_clients.remove(client_socket)
@@ -95,6 +102,7 @@ def broadcast_prices():
 
         except Exception as e:
             print(f"\n[Gateway-Price] Error in broadcast: {e}")
+
 
 def broadcast_news():
     """
