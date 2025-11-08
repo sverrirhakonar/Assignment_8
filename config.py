@@ -40,3 +40,4 @@ SHORT_WINDOW = 5  # Short moving average window
 LONG_WINDOW = 20  # Long moving average window
 BULLISH_THRESHOLD = 70  # Sentiment score > 70 is bullish
 BEARISH_THRESHOLD = 30  # Sentiment score < 30 is bearish
+TRADE_QUANTITY = 10  # Quantity of shares to trade
