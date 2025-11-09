@@ -9,6 +9,11 @@ This project simulates a high-frequency trading (HFT) system using four independ
 
 This project emphasizes process separation, synchronization, and robust communication, which are core principles of financial systems architecture.
 
+## Watch the video to see the system in action
+
+[![Watch the video](https://img.youtube.com/vi/Eb1ZTa4o6m4/maxresdefault.jpg)](https://www.youtube.com/watch?v=Eb1ZTa4o6m4)
+
+
 ## Architecture
 
 The system is composed of four specialists who work in separate, locked rooms. They communicate only through **Telephones (Sockets)** for messages or a public **Whiteboard (Shared Memory)** for live data.
