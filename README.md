@@ -1,4 +1,6 @@
 # Multi-Process Trading System
+### Authors: Sverrir Hakonarson, Robert Asgeirsson
+#### Had assistance from chatGPT in the making of the project
 
 This project simulates a high-frequency trading (HFT) system using four independent Python processes. It demonstrates real-world interprocess communication (IPC) techniques, including:
 
